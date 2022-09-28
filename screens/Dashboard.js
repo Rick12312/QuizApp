@@ -22,11 +22,12 @@ const Dashboard = () => {
       .get()
       .then((snapshot) => {
         if (snapshot.exists) {
-          setName(snapshot.data());
+          setName(snapshot.data().firstName);
         } else {
-          console.log("User does not exist");
+          console.log("User does not exist <<<<<<<");
         }
-      });
+      })
+      .catch((err) => console.log(err));
   }, []);
 
   return (
@@ -56,7 +57,7 @@ const Dashboard = () => {
             marginBottom: -50,
           }}
         >
-          Welcome, {name.firstName}
+          Welcome, {name}
         </Text>
         <Text style={{ fontSize: 20 }}></Text>
         <TouchableOpacity

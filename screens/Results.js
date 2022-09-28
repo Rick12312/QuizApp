@@ -16,8 +16,6 @@ const Results = ({ route }) => {
       .then((snapshot) => {
         if (snapshot.exists) {
           setHighscore(snapshot.data().highscore);
-          console.log(snapshot.data().highscore, "<<< CL1");
-          console.log(highscore, "<<<< highscore CL2");
           return highscore;
         } else {
           console.log("User does not exist");

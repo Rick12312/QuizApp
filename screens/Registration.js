@@ -7,11 +7,12 @@ import {
   StyleSheet,
   Image,
   ImageBackground,
+  Alert,
 } from "react-native";
 import { firebase } from "../config";
+import { getStorage, ref, uploadBytes } from "firebase/storage";
 import { useNavigation } from "@react-navigation/native";
 import * as ImagePicker from "expo-image-picker";
-import { getStorage, uploadBytes, ref as pickref } from "@firebase/storage";
 
 const Registration = () => {
   const [image, setImage] = useState(null);
@@ -21,8 +22,6 @@ const Registration = () => {
   const [lastName, setLastName] = useState("");
   const [highscore, setHighscore] = useState(0);
 
-  const storage = getStorage();
-
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.All,
@@ -30,10 +29,16 @@ const Registration = () => {
       aspect: [4, 3],
       quality: 1,
     });
-    console.log(result, result.uri, "<<<<<<<<<<<<<<<");
-    if (!result.cancelled) {
-      setImage(result.uri);
-    }
+    const source = { uri: result.uri };
+    setImage(source);
+  };
+
+  const uploadImage = async () => {
+    const storage = getStorage();
+    const imageRef = ref(storage, "images/");
+    const img = await fetch(image);
+    const bytes = await img.blob();
+    await uploadBytes(imageRef, bytes);
   };
 
   const navigation = useNavigation();
@@ -68,7 +73,7 @@ const Registration = () => {
               });
           })
           .catch((error) => {
-            alert(error.message);
+            alert(error.message, "<<<<<");
           });
       })
       .catch((error) => {
@@ -99,7 +104,7 @@ const Registration = () => {
         >
           {image ? (
             <Image
-              source={{ uri: image }}
+              source={{ uri: image.uri }}
               style={{
                 width: 100,
                 height: 100,
@@ -174,7 +179,10 @@ const Registration = () => {
             </Text>
           </TouchableOpacity>
           <TouchableOpacity
-            onPress={() => registerUser(email, password, firstName, lastName)}
+            onPress={() => {
+              uploadImage();
+              registerUser(email, password, firstName, lastName);
+            }}
             style={styles.button}
           >
             <Text style={{ fontWeight: "bold", fontSize: 22, color: "white" }}>
