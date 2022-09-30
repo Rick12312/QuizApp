@@ -32,7 +32,7 @@ const Dashboard = () => {
 
   return (
     <ImageBackground
-      source={require("../images/background5.jpeg")}
+      source={require("../images/background6.jpeg")}
       style={{ height: "100%", width: "100%" }}
     >
       <SafeAreaView style={styles.container}>
