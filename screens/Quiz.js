@@ -199,6 +199,14 @@ const Quiz = () => {
                 flexDirection: "row",
                 justifyContent: "space-between",
               }}
+            ></View>
+
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
             >
               <TouchableOpacity style={styles.button} onPress={skipQuestion}>
                 <Text
@@ -244,7 +252,6 @@ let styles = StyleSheet.create({
     alignItems: "center",
   },
   button: {
-    marginTop: 50,
     height: 85,
     flexDirection: "row",
     width: 175,

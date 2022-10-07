@@ -22,7 +22,9 @@ const Dashboard = () => {
       .get()
       .then((snapshot) => {
         if (snapshot.exists) {
+          console.log(snapshot.data());
           setName(snapshot.data().firstName);
+          console.log(name);
         } else {
           console.log("User does not exist <<<<<<<");
         }

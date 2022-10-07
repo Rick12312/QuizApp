@@ -29,7 +29,8 @@ const Results = ({ route }) => {
         }
       })
       .then((highscore) => {
-        if (score > highscore) {
+        if (score < highscore) {
+          console.log("If block, if score is greater than highscore");
           firebase
             .firestore()
             .collection("users")
@@ -54,18 +55,18 @@ const Results = ({ route }) => {
         alignItems: "center",
       }}
     >
-      <View style={styles.innerContainer}>
-        <View
-          style={{
-            width: "100%",
-            height: 75,
-            marginTop: -35,
-            backgroundColor: "#026efd",
-            borderTopRightRadius: 20,
-            borderTopLeftRadius: 20,
-          }}
-        ></View>
-        <View>
+      <View>
+        <View style={styles.innerContainer}>
+          <View
+            style={{
+              width: "100%",
+              height: 75,
+              marginTop: -105,
+              backgroundColor: "#026efd",
+              borderTopRightRadius: 20,
+              borderTopLeftRadius: 20,
+            }}
+          ></View>
           {score > highscore ? (
             <View>
               <Image
@@ -76,8 +77,14 @@ const Results = ({ route }) => {
                 }}
               />
               <Text style={styles.scoreText}>Congratulations</Text>
-              <Text style={styles.scoreText}>You scored {score}</Text>
               <Text style={styles.scoreText}>New highscore!</Text>
+              <Text style={styles.scoreText}>Score {3}</Text>
+              <TouchableOpacity
+                onPress={() => navigation.navigate("Dashboard")}
+                style={styles.button}
+              >
+                <Text style={{ fontSize: 24, fontWeight: "bold" }}>RETRY</Text>
+              </TouchableOpacity>
             </View>
           ) : (
             <>
@@ -91,17 +98,23 @@ const Results = ({ route }) => {
               <Text style={styles.scoreText}>Better luck next time</Text>
               <Text style={styles.scoreText}>You scored {score}</Text>
               <Text style={styles.scoreText}>Highscore {highscore}</Text>
+              <TouchableOpacity
+                onPress={() => navigation.navigate("Dashboard")}
+                style={styles.button}
+              >
+                <Text
+                  style={{
+                    fontSize: 24,
+                    fontWeight: "bold",
+                    opacity: 1,
+                    backgroundColor: "#026efd",
+                  }}
+                >
+                  RETRY
+                </Text>
+              </TouchableOpacity>
             </>
           )}
-        </View>
-
-        <View>
-          <TouchableOpacity
-            onPress={() => navigation.navigate("Dashboard")}
-            style={styles.button}
-          >
-            <Text style={{ fontSize: 24, fontWeight: "bold" }}>RETRY</Text>
-          </TouchableOpacity>
         </View>
       </View>
     </ImageBackground>
@@ -116,6 +129,9 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: "white",
+    borderColor: "black",
+    borderWidth: 0.25,
+    opacity: 0.9,
   },
   button: {
     borderRadius: 20,
@@ -134,8 +150,10 @@ const styles = StyleSheet.create({
     color: "black",
   },
   button: {
+    marginTop: 10,
     height: 70,
-    width: 290,
+    width: 250,
+    margin: 5,
     backgroundColor: "#026efd",
     alignItems: "center",
     justifyContent: "center",

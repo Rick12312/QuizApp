@@ -63,6 +63,8 @@ const Login = () => {
             Login
           </Text>
         </TouchableOpacity>
+        <View style={{ padding: 10 }}></View>
+
         <TouchableOpacity
           onPress={() => navigation.navigate("Registration")}
           style={{ marginTop: 20 }}

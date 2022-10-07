@@ -19,4 +19,6 @@ if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 }
 
+const app = firebase.initializeApp(firebaseConfig);
+
 export { firebase };

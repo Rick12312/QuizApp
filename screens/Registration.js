@@ -21,6 +21,9 @@ const Registration = () => {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [highscore, setHighscore] = useState(0);
+  const [averageScore, setAverageScore] = useState(0);
+  const [gamesPlayed, setGamesPlayed] = useState(0);
+  const [avatar, setAvatar] = useState("");
 
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -31,6 +34,7 @@ const Registration = () => {
     });
     const source = { uri: result.uri };
     setImage(source);
+    console.log(source);
   };
 
   const uploadImage = async () => {
@@ -70,6 +74,9 @@ const Registration = () => {
                 lastName,
                 email,
                 highscore,
+                gamesPlayed,
+                averageScore,
+                avatar,
               });
           })
           .catch((error) => {
@@ -108,7 +115,7 @@ const Registration = () => {
               style={{
                 width: 100,
                 height: 100,
-                borderRadius: 150,
+                borderRadius: 100,
                 marginBottom: 5,
               }}
             />
@@ -118,7 +125,7 @@ const Registration = () => {
               style={{
                 width: 100,
                 height: 100,
-                borderRadius: 150,
+                borderRadius: 100,
                 marginBottom: 5,
               }}
             />
@@ -143,12 +150,14 @@ const Registration = () => {
           <TextInput
             style={styles.textInput}
             placeholder="First Name"
+            autoCapitalize="words"
             onChangeText={(firstName) => setFirstName(firstName)}
             autoCorrect={false}
           />
           <TextInput
             style={styles.textInput}
             placeholder="Last Name"
+            autoCapitalize="words"
             onChangeText={(lastName) => setLastName(lastName)}
             autoCorrect={false}
           />
