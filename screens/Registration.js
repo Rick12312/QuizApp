@@ -25,25 +25,26 @@ const Registration = () => {
   const [gamesPlayed, setGamesPlayed] = useState(0);
   const [avatar, setAvatar] = useState("");
 
-  const pickImage = async () => {
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.All,
-      allowsEditing: true,
-      aspect: [4, 3],
-      quality: 1,
-    });
-    const source = { uri: result.uri };
-    setImage(source);
-    console.log(source);
-  };
+  // const pickImage = async () => {
+  //   let result = await ImagePicker.launchImageLibraryAsync({
+  //     mediaTypes: ImagePicker.MediaTypeOptions.All,
+  //     allowsEditing: true,
+  //     aspect: [4, 3],
+  //     quality: 1,
+  //   });
+  //   const source = { uri: result.uri };
+  //   setImage(source);
+  //   console.log(source);
 
-  const uploadImage = async () => {
-    const storage = getStorage();
-    const imageRef = ref(storage, "images/");
-    const img = await fetch(image);
-    const bytes = await img.blob();
-    await uploadBytes(imageRef, bytes);
-  };
+  // };
+
+  // const uploadImage = async () => {
+  //   const storage = getStorage();
+  //   const imageRef = ref(storage, "images/");
+  //   const img = await fetch(image);
+  //   const bytes = await img.blob();
+  //   await uploadBytes(imageRef, bytes);
+  // };
 
   const navigation = useNavigation();
 
@@ -90,7 +91,7 @@ const Registration = () => {
 
   return (
     <ImageBackground
-      source={require("../images/background2.jpeg")}
+      source={require("../images/background1.jpeg")}
       style={{ height: "100%", width: "100%" }}
     >
       <View style={styles.container}>
@@ -109,19 +110,9 @@ const Registration = () => {
             alignItems: "center",
           }}
         >
-          {image ? (
+          {/* {image && (
             <Image
               source={{ uri: image.uri }}
-              style={{
-                width: 100,
-                height: 100,
-                borderRadius: 100,
-                marginBottom: 5,
-              }}
-            />
-          ) : (
-            <Image
-              source={require("../images/avatar.jpeg")}
               style={{
                 width: 100,
                 height: 100,
@@ -145,7 +136,7 @@ const Registration = () => {
             >
               Upload an avatar image
             </Text>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
 
           <TextInput
             style={styles.textInput}
@@ -189,7 +180,6 @@ const Registration = () => {
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => {
-              uploadImage();
               registerUser(email, password, firstName, lastName);
             }}
             style={styles.button}

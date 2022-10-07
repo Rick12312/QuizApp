@@ -2,6 +2,7 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import React, { useState, useEffect } from "react";
 import { firebase } from "./config";
+import { StatusBar } from "react-native";
 
 import Login from "./screens/Login.js";
 import Registration from "./screens/Registration";
@@ -14,6 +15,7 @@ import Results from "./screens/Results";
 const Stack = createStackNavigator();
 
 const App = () => {
+  StatusBar.setBarStyle("light-content", true);
   const [initializing, setInitializing] = useState(true);
   const [user, setUser] = useState();
 

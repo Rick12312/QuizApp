@@ -9,8 +9,10 @@ import {
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { firebase } from "../config";
+import { StatusBar } from "react-native";
 
 const Results = ({ route }) => {
+  //StatusBar.setBarStyle("light-content", true);
   const navigation = useNavigation();
   const [highscore, setHighscore] = useState(0);
 
@@ -29,7 +31,7 @@ const Results = ({ route }) => {
         }
       })
       .then((highscore) => {
-        if (score < highscore) {
+        if (score > highscore) {
           console.log("If block, if score is greater than highscore");
           firebase
             .firestore()
@@ -78,7 +80,7 @@ const Results = ({ route }) => {
               />
               <Text style={styles.scoreText}>Congratulations</Text>
               <Text style={styles.scoreText}>New highscore!</Text>
-              <Text style={styles.scoreText}>Score {3}</Text>
+              <Text style={styles.scoreText}>Score {score}</Text>
               <TouchableOpacity
                 onPress={() => navigation.navigate("Dashboard")}
                 style={styles.button}

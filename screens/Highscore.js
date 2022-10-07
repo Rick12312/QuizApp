@@ -68,7 +68,7 @@ const Highscore = () => {
             style={styles.button}
             onPress={() => navigation.navigate("Dashboard")}
           >
-            <Text style={styles.text}>Home</Text>
+            <Text style={styles.buttonText}>HOME</Text>
           </TouchableOpacity>
         </View>
       </SafeAreaView>
@@ -89,6 +89,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     borderRadius: 50,
+  },
+  buttonText: {
+    fontSize: 22,
+    color: "white",
+    fontWeight: "bold",
+    textAlign: "center",
   },
   text: {
     fontSize: 20,

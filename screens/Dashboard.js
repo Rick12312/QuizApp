@@ -66,15 +66,15 @@ const Dashboard = () => {
           onPress={() => navigation.navigate("Quiz")}
           style={styles.startBtn}
         >
-          <Text style={{ fontSize: 22, fontWeight: "bold", color: "white" }}>
-            Play
+          <Text style={{ fontSize: 24, fontWeight: "bold", color: "white" }}>
+            Start
           </Text>
         </TouchableOpacity>
         <TouchableOpacity
           onPress={() => navigation.navigate("Highscore")}
           style={styles.button}
         >
-          <Text style={{ fontSize: 22, fontWeight: "bold", color: "white" }}>
+          <Text style={{ fontSize: 24, fontWeight: "bold", color: "white" }}>
             Highscore
           </Text>
         </TouchableOpacity>
@@ -84,8 +84,8 @@ const Dashboard = () => {
           }}
           style={styles.button}
         >
-          <Text style={{ fontSize: 22, fontWeight: "bold", color: "white" }}>
-            Sign out
+          <Text style={{ fontSize: 24, fontWeight: "bold", color: "white" }}>
+            Sign Out
           </Text>
         </TouchableOpacity>
       </SafeAreaView>
