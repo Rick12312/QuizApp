@@ -7,12 +7,12 @@ import {
   StyleSheet,
   Image,
   ImageBackground,
-  Alert,
 } from "react-native";
 import { firebase } from "../config";
-import { getStorage, ref, uploadBytes } from "firebase/storage";
+import { getStorage, uploadBytes, ref } from "firebase/storage";
 import { useNavigation } from "@react-navigation/native";
-import * as ImagePicker from "expo-image-picker";
+// import * as ImagePicker from "expo-image-picker";
+import ImagePickerUtil from "../utils/ImagePicker";
 
 const Registration = () => {
   const [image, setImage] = useState(null);
@@ -25,26 +25,15 @@ const Registration = () => {
   const [gamesPlayed, setGamesPlayed] = useState(0);
   const [avatar, setAvatar] = useState("");
 
-  // const pickImage = async () => {
-  //   let result = await ImagePicker.launchImageLibraryAsync({
-  //     mediaTypes: ImagePicker.MediaTypeOptions.All,
-  //     allowsEditing: true,
-  //     aspect: [4, 3],
-  //     quality: 1,
-  //   });
-  //   const source = { uri: result.uri };
-  //   setImage(source);
-  //   console.log(source);
+  const storage = getStorage();
 
-  // };
-
-  // const uploadImage = async () => {
-  //   const storage = getStorage();
-  //   const imageRef = ref(storage, "images/");
-  //   const img = await fetch(image);
-  //   const bytes = await img.blob();
-  //   await uploadBytes(imageRef, bytes);
-  // };
+  const uploadImage = async () => {
+    await firebase.auth().signInWithEmailAndPassword(email, password);
+    const imageRef = ref(storage, `users/avatar`);
+    const img = await fetch(image);
+    const bytes = await img.blob();
+    await uploadBytes(imageRef, bytes);
+  };
 
   const navigation = useNavigation();
 
@@ -82,6 +71,12 @@ const Registration = () => {
           })
           .catch((error) => {
             alert(error.message, "<<<<<");
+          })
+          .then(() => {
+            uploadImage();
+          })
+          .catch((err) => {
+            console.log(err);
           });
       })
       .catch((error) => {
@@ -110,33 +105,7 @@ const Registration = () => {
             alignItems: "center",
           }}
         >
-          {/* {image && (
-            <Image
-              source={{ uri: image.uri }}
-              style={{
-                width: 100,
-                height: 100,
-                borderRadius: 100,
-                marginBottom: 5,
-              }}
-            />
-          )}
-
-          <TouchableOpacity
-            styles={{ paddingBottom: 10 }}
-            onPress={() => pickImage()}
-          >
-            <Text
-              style={{
-                fontSize: 16,
-                marginBottom: 5,
-                color: "white",
-                fontWeight: "bold",
-              }}
-            >
-              Upload an avatar image
-            </Text>
-          </TouchableOpacity> */}
+          <ImagePickerUtil setImage={setImage} image={image} />
 
           <TextInput
             style={styles.textInput}

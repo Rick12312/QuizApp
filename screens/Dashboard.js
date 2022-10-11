@@ -12,7 +12,8 @@ import { useNavigation } from "@react-navigation/native";
 
 const Dashboard = () => {
   const navigation = useNavigation();
-  const [name, setName] = useState("");
+  const [name, setName] = useState({});
+  const [image, setImage] = useState(null);
 
   useEffect(() => {
     firebase
@@ -21,20 +22,19 @@ const Dashboard = () => {
       .doc(firebase.auth().currentUser.uid)
       .get()
       .then((snapshot) => {
+        console.log(snapshot.data());
         if (snapshot.exists) {
           console.log(snapshot.data());
-          setName(snapshot.data().firstName);
-          console.log(name);
+          setName(snapshot.data());
         } else {
           console.log("User does not exist <<<<<<<");
         }
-      })
-      .catch((err) => console.log(err));
+      });
   }, []);
 
   return (
     <ImageBackground
-      source={require("../images/background6.jpeg")}
+      source={require("../images/background7.jpeg")}
       style={{ height: "100%", width: "100%" }}
     >
       <SafeAreaView style={styles.container}>
@@ -47,19 +47,27 @@ const Dashboard = () => {
             marginBottom: 20,
           }}
         />
-        <Image
-          source={require("../images/avatar.webp")}
-          style={{ width: 150, height: 150, borderRadius: 100 }}
-        />
+        {/* <Image
+          source={require("../images/astronaut.png")}
+          style={{
+            width: 150,
+            height: 150,
+            borderRadius: 100,
+            borderWidth: 0.2,
+            borderColor: "grey",
+          }}
+        /> */}
+        <ImagePickerUtil image={image} setImage={setImage} />
+
         <Text
           style={{
-            fontSize: 20,
+            fontSize: 22,
             fontWeight: "bold",
             color: "white",
             marginBottom: -50,
           }}
         >
-          Welcome, {name}
+          Welcome, {name.firstName}
         </Text>
         <Text style={{ fontSize: 20 }}></Text>
         <TouchableOpacity
