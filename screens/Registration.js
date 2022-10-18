@@ -9,6 +9,8 @@ import {
   ImageBackground,
 } from "react-native";
 import { firebase } from "../config";
+import { getAuth } from "firebase/auth";
+
 import { getStorage, uploadBytes, ref } from "firebase/storage";
 import { useNavigation } from "@react-navigation/native";
 // import * as ImagePicker from "expo-image-picker";
@@ -26,13 +28,19 @@ const Registration = () => {
   const [avatar, setAvatar] = useState("");
 
   const storage = getStorage();
+  const auth = getAuth();
 
   const uploadImage = async () => {
     await firebase.auth().signInWithEmailAndPassword(email, password);
-    const imageRef = ref(storage, `users/avatar`);
-    const img = await fetch(image);
-    const bytes = await img.blob();
-    await uploadBytes(imageRef, bytes);
+
+    const user = auth.currentUser;
+
+    if (user !== null) {
+      const imageRef = ref(storage, `users/${user.uid}/avatar.jpg`);
+      const img = await fetch(image);
+      const bytes = await img.blob();
+      await uploadBytes(imageRef, bytes);
+    }
   };
 
   const navigation = useNavigation();

@@ -8,12 +8,35 @@ import {
   ImageBackground,
 } from "react-native";
 import { firebase } from "../config";
+import { getStorage, ref, getDownloadUrl } from "firebase/storage";
 import { useNavigation } from "@react-navigation/native";
+import { getAuth } from "@firebase/auth";
 
 const Dashboard = () => {
   const navigation = useNavigation();
-  const [name, setName] = useState({});
+  const [user, setUser] = useState({});
   const [image, setImage] = useState(null);
+
+  const storage = getStorage();
+  const auth = getAuth();
+
+  // const getImage = async () => {
+  //   const storageRef = firebase.storage().ref();
+  // };
+
+  // firebase;
+  // .firestore()
+  // .collection("users")
+  // .doc(firebase.auth().currentUser.uid)
+  // .get()
+  // .then((snapshot) => {
+  //   if (snapshot.exists) {
+  //     console.log(snapshot.data());
+  //     setUser(snapshot.data());
+  //   } else {
+  //     console.log("User does not exist <<<<<<<");
+  //   }
+  // });
 
   useEffect(() => {
     firebase
@@ -22,12 +45,10 @@ const Dashboard = () => {
       .doc(firebase.auth().currentUser.uid)
       .get()
       .then((snapshot) => {
-        console.log(snapshot.data());
         if (snapshot.exists) {
-          console.log(snapshot.data());
-          setName(snapshot.data());
+          setUser(snapshot.data());
         } else {
-          console.log("User does not exist <<<<<<<");
+          console.log("Data not found");
         }
       });
   }, []);
@@ -47,17 +68,29 @@ const Dashboard = () => {
             marginBottom: 20,
           }}
         />
-        {/* <Image
-          source={require("../images/astronaut.png")}
-          style={{
-            width: 150,
-            height: 150,
-            borderRadius: 100,
-            borderWidth: 0.2,
-            borderColor: "grey",
-          }}
-        /> */}
-        <ImagePickerUtil image={image} setImage={setImage} />
+        {image ? (
+          <Image
+            source={{ uri: image }}
+            style={{
+              width: 150,
+              height: 150,
+              borderRadius: 100,
+              borderWidth: 0.2,
+              borderColor: "grey",
+            }}
+          />
+        ) : (
+          <Image
+            source={require("../images/astronaut.png")}
+            style={{
+              width: 150,
+              height: 150,
+              borderRadius: 100,
+              borderWidth: 0.2,
+              borderColor: "grey",
+            }}
+          />
+        )}
 
         <Text
           style={{
@@ -67,7 +100,7 @@ const Dashboard = () => {
             marginBottom: -50,
           }}
         >
-          Welcome, {name.firstName}
+          Welcome, {user.firstName}
         </Text>
         <Text style={{ fontSize: 20 }}></Text>
         <TouchableOpacity
