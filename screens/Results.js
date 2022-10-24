@@ -12,9 +12,9 @@ import { firebase } from "../config";
 import { StatusBar } from "react-native";
 
 const Results = ({ route }) => {
-  //StatusBar.setBarStyle("light-content", true);
   const navigation = useNavigation();
   const [highscore, setHighscore] = useState(0);
+  const [numOfGames, setNumOfGames] = useState(0);
 
   useEffect(() => {
     firebase
@@ -25,23 +25,23 @@ const Results = ({ route }) => {
       .then((snapshot) => {
         if (snapshot.exists) {
           setHighscore(snapshot.data().highscore);
-          return highscore;
+
+          setNumOfGames(snapshot.data().gamesPlayed);
+          console.log(snapshot.data().gamesPlayed);
         } else {
           console.log("User does not exist");
         }
       })
-      .then((highscore) => {
-        if (score > highscore) {
-          console.log("If block, if score is greater than highscore");
-          firebase
-            .firestore()
-            .collection("users")
-            .doc(firebase.auth().currentUser.uid)
-            .update({
-              highscore: score,
-            });
-          setHighscore(score);
-        }
+      .then(() => {
+        firebase
+          .firestore()
+          .collection("users")
+          .doc(firebase.auth().currentUser.uid)
+          .update({
+            highscore: score,
+            gamesPlayed: numOfGames + 1,
+          });
+        setHighscore(score);
       });
   }, []);
 

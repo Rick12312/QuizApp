@@ -22,9 +22,9 @@ const Quiz = () => {
   const navigation = useNavigation();
 
   const shuffleArray = (array) => {
-    for (var i = array.length - 1; i > 0; i--) {
-      var j = Math.floor(Math.random() * (i + 1));
-      var temp = array[i];
+    for (let i = array.length - 1; i > 0; i--) {
+      let j = Math.floor(Math.random() * (i + 1));
+      let temp = array[i];
       array[i] = array[j];
       array[j] = temp;
     }
@@ -144,14 +144,14 @@ const Quiz = () => {
                 padding: 15,
                 marginBottom: -20,
                 fontWeight: "bold",
-                fontSize: 16,
+                fontSize: 18,
               }}
             >
               {questionNumber + 1}/{data.length}
             </Text>
             <Text
               style={{
-                fontSize: 20,
+                fontSize: 18,
                 fontWeight: "bold",
                 padding: 15,
                 color: "white",
@@ -200,29 +200,48 @@ const Quiz = () => {
                 justifyContent: "space-between",
               }}
             ></View>
-
-            <View
-              style={{
-                flexDirection: "row",
-                justifyContent: "space-between",
-                alignItems: "center",
-              }}
+          </View>
+          <View
+            style={{
+              position: "absolute",
+              marginTop: 650,
+              flexDirection: "row",
+              justifyContent: "center",
+              alignItems: "center",
+              backgroundColor: "lightblue",
+              borderRadius: 20,
+              opacity: 0.8,
+            }}
+          >
+            <TouchableOpacity style={styles.button} onPress={skipQuestion}>
+              <Text
+                style={{ fontSize: 18, fontWeight: "bold", color: "white" }}
+              >
+                Skip
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.button} onPress={resetQuiz}>
+              <Text
+                style={{ fontSize: 18, fontWeight: "bold", color: "white" }}
+              >
+                Restart
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => navigation.navigate("Dashboard")}
+              style={styles.button}
             >
-              <TouchableOpacity style={styles.button} onPress={skipQuestion}>
-                <Text
-                  style={{ fontSize: 18, fontWeight: "bold", color: "white" }}
-                >
-                  SKIP
-                </Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.button} onPress={resetQuiz}>
-                <Text
-                  style={{ fontSize: 18, fontWeight: "bold", color: "white" }}
-                >
-                  RESTART
-                </Text>
-              </TouchableOpacity>
-            </View>
+              <Text
+                style={{
+                  fontSize: 18,
+                  fontWeight: "bold",
+                  opacity: 1,
+                  color: "white",
+                }}
+              >
+                Quit
+              </Text>
+            </TouchableOpacity>
           </View>
         </SafeAreaView>
       </ImageBackground>
@@ -254,11 +273,11 @@ let styles = StyleSheet.create({
   button: {
     height: 85,
     flexDirection: "row",
-    width: 175,
-    backgroundColor: "lightblue",
+    width: 122,
+    opacity: 1,
     alignItems: "center",
     justifyContent: "center",
-    borderRadius: 50,
+    fontWeight: "bold",
   },
   option: {
     flex: 1,

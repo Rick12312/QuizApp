@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import {
   View,
   Text,
@@ -10,16 +10,14 @@ import {
 } from "react-native";
 import { firebase } from "../config";
 import { getAuth } from "firebase/auth";
-
 import { getStorage, uploadBytes, ref } from "firebase/storage";
 import { useNavigation } from "@react-navigation/native";
-// import * as ImagePicker from "expo-image-picker";
 import ImagePickerUtil from "../utils/ImagePicker";
 
 const Registration = () => {
-  const [image, setImage] = useState(null);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [image, setImage] = useState(null);
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [highscore, setHighscore] = useState(0);
@@ -29,6 +27,7 @@ const Registration = () => {
 
   const storage = getStorage();
   const auth = getAuth();
+  const navigation = useNavigation();
 
   const uploadImage = async () => {
     await firebase.auth().signInWithEmailAndPassword(email, password);
@@ -42,8 +41,6 @@ const Registration = () => {
       await uploadBytes(imageRef, bytes);
     }
   };
-
-  const navigation = useNavigation();
 
   const registerUser = async () => {
     await firebase

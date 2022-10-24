@@ -16,6 +16,18 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
+  const forgotPassword = () => {
+    firebase
+      .auth()
+      .sendPasswordResetEmail(email)
+      .then(() => {
+        alert("Password reset email sent");
+      })
+      .catch((err) => {
+        alert("Enter a valid email address");
+      });
+  };
+
   loginUser = async (email, password) => {
     try {
       await firebase.auth().signInWithEmailAndPassword(email, password);
@@ -64,13 +76,20 @@ const Login = () => {
           </Text>
         </TouchableOpacity>
         <View style={{ padding: 10 }}></View>
-
         <TouchableOpacity
           onPress={() => navigation.navigate("Registration")}
           style={{ marginTop: 20 }}
         >
           <Text style={{ fontWeight: "bold", fontSize: 16, color: "white" }}>
             Don't have an account? Register
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => forgotPassword()}
+          style={{ marginTop: 20 }}
+        >
+          <Text style={{ fontWeight: "bold", fontSize: 16, color: "white" }}>
+            Forgot Password?
           </Text>
         </TouchableOpacity>
       </View>
