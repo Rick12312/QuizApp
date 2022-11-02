@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   View,
   Text,
@@ -10,6 +10,7 @@ import axios from "axios";
 import { useNavigation } from "@react-navigation/native";
 import { ActivityIndicator } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import * as Progress from "react-native-progress";
 
 const Quiz = () => {
   const [data, setData] = useState([]);
@@ -18,6 +19,8 @@ const Quiz = () => {
   const [score, setScore] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [myColor, setMyColor] = useState("white");
+  const [timerCount, setTimer] = useState(10);
+  const [isButtonDisabled, setIsButtonDisabled] = useState(false);
 
   const navigation = useNavigation();
 
@@ -49,14 +52,26 @@ const Quiz = () => {
     }
   };
 
+  const startTimer = () => {
+    let interval = setInterval(() => {
+      setTimer((lastTimerCount) => {
+        lastTimerCount <= 1 && clearInterval(interval);
+        return lastTimerCount - 1;
+      });
+    }, 1000);
+    return () => clearInterval(interval);
+  };
+
   useEffect(() => {
     getQuestions();
+    startTimer();
   }, []);
 
   const resetQuiz = () => {
     setQuestionNumber(0);
     setScore(0);
     getQuestions();
+    startTimer();
   };
 
   const skipQuestion = () => {
@@ -80,8 +95,6 @@ const Quiz = () => {
   };
 
   const handleSelectedOption = (option) => {
-    console.log(option === data[questionNumber].correctAnswer);
-
     if (option === data[questionNumber].correctAnswer) {
       setMyColor("green");
       optionStyles(myColor);
@@ -90,21 +103,25 @@ const Quiz = () => {
       optionStyles(myColor);
     }
 
+    setIsButtonDisabled(true);
+
     setTimeout(() => {
       setMyColor("white");
       optionStyles(myColor);
+      setIsButtonDisabled(false);
 
       if (option === data[questionNumber].correctAnswer) {
-        setScore(score + 1);
+        setScore(score + 10 + timerCount);
       }
 
       if (questionNumber !== 9) {
+        startTimer();
         setQuestionNumber(questionNumber + 1);
         setOptions(generateOptionsAndShuffle(data[questionNumber + 1]));
       } else {
         showResults();
       }
-    }, 900);
+    }, 1000);
   };
 
   if (isLoading) {
@@ -138,30 +155,55 @@ const Quiz = () => {
               alignSelf: "flex-start",
             }}
           >
-            <Text
-              style={{
-                color: "white",
-                padding: 15,
-                marginBottom: -20,
-                fontWeight: "bold",
-                fontSize: 18,
-              }}
-            >
-              {questionNumber + 1}/{data.length}
-            </Text>
-            <Text
-              style={{
-                fontSize: 18,
-                fontWeight: "bold",
-                padding: 15,
-                color: "white",
-              }}
-            >
-              {data[questionNumber].question}
-            </Text>
+            <View style={{ minWidth: "100%", padding: 25 }}>
+              <View
+                style={{
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  marginBottom: 10,
+                }}
+              >
+                <Text
+                  style={{
+                    color: "white",
+                    fontWeight: "bold",
+                    fontSize: 22,
+                  }}
+                >
+                  {questionNumber + 1}/{data.length}
+                </Text>
+                <Text
+                  style={{
+                    fontSize: 22,
+                    color: "white",
+                    fontWeight: "bold",
+                  }}
+                >
+                  {timerCount}
+                </Text>
+              </View>
+
+              <Text
+                style={{
+                  fontSize: 20,
+                  fontWeight: "bold",
+                  color: "white",
+                }}
+              >
+                Q.{"  "}
+                {data[questionNumber].question}
+              </Text>
+            </View>
           </View>
-          <View stlye={styles.answersContainer}>
+          <Progress.Bar
+            progress={Number((questionNumber + 1) / 10)}
+            width={360}
+            height={17.5}
+            style={{ marginBottom: 15 }}
+          />
+          <View>
             <TouchableOpacity
+              disabled={isButtonDisabled}
               style={optionStyles(myColor)}
               onPress={() => handleSelectedOption(options[0])}
             >
@@ -170,7 +212,7 @@ const Quiz = () => {
               </Text>
             </TouchableOpacity>
             <TouchableOpacity
-              delayPressIn={150}
+              disabled={isButtonDisabled}
               style={optionStyles(myColor)}
               onPress={() => handleSelectedOption(options[1])}
             >
@@ -179,6 +221,7 @@ const Quiz = () => {
               </Text>
             </TouchableOpacity>
             <TouchableOpacity
+              disabled={isButtonDisabled}
               style={optionStyles(myColor)}
               onPress={() => handleSelectedOption(options[2])}
             >
@@ -187,6 +230,7 @@ const Quiz = () => {
               </Text>
             </TouchableOpacity>
             <TouchableOpacity
+              disabled={isButtonDisabled}
               style={optionStyles(myColor)}
               onPress={() => handleSelectedOption(options[3])}
             >
@@ -204,7 +248,7 @@ const Quiz = () => {
           <View
             style={{
               position: "absolute",
-              marginTop: 650,
+              marginTop: 700,
               flexDirection: "row",
               justifyContent: "center",
               alignItems: "center",
@@ -222,7 +266,11 @@ const Quiz = () => {
             </TouchableOpacity>
             <TouchableOpacity style={styles.button} onPress={resetQuiz}>
               <Text
-                style={{ fontSize: 18, fontWeight: "bold", color: "white" }}
+                style={{
+                  fontSize: 18,
+                  fontWeight: "bold",
+                  color: "white",
+                }}
               >
                 Restart
               </Text>
@@ -286,7 +334,7 @@ let styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     marginTop: 4,
-    marginBottom: 10.5,
+    marginBottom: 12.5,
     maxHeight: 85,
     width: 370,
   },

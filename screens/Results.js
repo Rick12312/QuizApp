@@ -9,14 +9,43 @@ import {
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { firebase } from "../config";
-import { StatusBar } from "react-native";
+import AnimateNumber from "react-native-animate-number";
+import LottieView from "lottie-react-native";
 
 const Results = ({ route }) => {
   const navigation = useNavigation();
   const [highscore, setHighscore] = useState(0);
-  const [numOfGames, setNumOfGames] = useState(0);
+  const [gamesPlayed, setGamesPlayed] = useState(0);
+  const { score } = route.params;
 
-  useEffect(() => {
+  const updateGamesPlayed = () => {
+    firebase
+      .firestore()
+      .collection("users")
+      .doc(firebase.auth().currentUser.uid)
+      .get()
+      .then((snapshot) => {
+        if (snapshot.exists) {
+          setGamesPlayed(snapshot.data().gamesPlayed + 1);
+          console.log(snapshot.data().gamesPlayed, "<<");
+          return snapshot.data().gamesPlayed + 1;
+        } else {
+          console.log("User does not exist");
+        }
+      })
+      .then((gamesPlayed) => {
+        console.log(gamesPlayed);
+        firebase
+          .firestore()
+          .collection("users")
+          .doc(firebase.auth().currentUser.uid)
+          .update({
+            gamesPlayed: gamesPlayed,
+          });
+      });
+  };
+
+  const updateHighscore = () => {
     firebase
       .firestore()
       .collection("users")
@@ -25,100 +54,79 @@ const Results = ({ route }) => {
       .then((snapshot) => {
         if (snapshot.exists) {
           setHighscore(snapshot.data().highscore);
-
-          setNumOfGames(snapshot.data().gamesPlayed);
-          console.log(snapshot.data().gamesPlayed);
+          console.log(snapshot.data().gamesPlayed, "<<");
+          console.log(gamesPlayed);
+          return snapshot.data().highscore;
         } else {
           console.log("User does not exist");
         }
       })
-      .then(() => {
-        firebase
-          .firestore()
-          .collection("users")
-          .doc(firebase.auth().currentUser.uid)
-          .update({
-            highscore: score,
-            gamesPlayed: numOfGames + 1,
-          });
-        setHighscore(score);
+      .then((highscore) => {
+        console.log(highscore);
+        if (highscore < score) {
+          console.log(highscore, score, "Inside if statement <<<<");
+          firebase
+            .firestore()
+            .collection("users")
+            .doc(firebase.auth().currentUser.uid)
+            .update({
+              highscore: score,
+            });
+        }
       });
-  }, []);
+  };
 
-  const { score } = route.params;
+  useEffect(() => {
+    updateHighscore();
+    updateGamesPlayed();
+  }, []);
 
   return (
     <ImageBackground
-      source={require("../images/background5.jpeg")}
       style={{
         height: "100%",
         width: "100%",
-        justifyContent: "center",
         alignItems: "center",
+        justifyContent: "center",
       }}
+      source={require("../images/background1.jpeg")}
     >
       <View>
-        <View style={styles.innerContainer}>
-          <View
-            style={{
-              width: "100%",
-              height: 75,
-              marginTop: -105,
-              backgroundColor: "#026efd",
-              borderTopRightRadius: 20,
-              borderTopLeftRadius: 20,
-            }}
-          ></View>
-          {score > highscore ? (
-            <View>
-              <Image
-                source={require("../images/trophy2.jpeg")}
-                style={{
-                  height: "50%",
-                  resizeMode: "contain",
-                }}
-              />
-              <Text style={styles.scoreText}>Congratulations</Text>
-              <Text style={styles.scoreText}>New highscore!</Text>
-              <Text style={styles.scoreText}>Score {score}</Text>
-              <TouchableOpacity
-                onPress={() => navigation.navigate("Dashboard")}
-                style={styles.button}
-              >
-                <Text style={{ fontSize: 24, fontWeight: "bold" }}>RETRY</Text>
-              </TouchableOpacity>
-            </View>
-          ) : (
-            <>
-              <Image
-                source={require("../images/facepalm.png")}
-                style={{
-                  height: "50%",
-                  resizeMode: "contain",
-                }}
-              />
-              <Text style={styles.scoreText}>Better luck next time</Text>
-              <Text style={styles.scoreText}>You scored {score}</Text>
-              <Text style={styles.scoreText}>Highscore {highscore}</Text>
-              <TouchableOpacity
-                onPress={() => navigation.navigate("Dashboard")}
-                style={styles.button}
-              >
-                <Text
-                  style={{
-                    fontSize: 24,
-                    fontWeight: "bold",
-                    opacity: 1,
-                    backgroundColor: "#026efd",
-                  }}
-                >
-                  RETRY
-                </Text>
-              </TouchableOpacity>
-            </>
-          )}
-        </View>
+        <LottieView
+          source={require("../assets/Animated/trophy-animation.json")}
+          autoPlay
+          loop
+          style={{
+            width: 300,
+          }}
+        />
       </View>
+      <View>
+        <Text style={styles.scoreText}>You scored</Text>
+        <AnimateNumber
+          style={styles.scoreText}
+          value={score}
+          timing="easeOut"
+          formatter={(val) => {
+            return parseFloat(val).toFixed(0);
+          }}
+        />
+      </View>
+
+      <TouchableOpacity
+        style={styles.button}
+        onPress={() => navigation.navigate("Dashboard")}
+      >
+        <Text
+          style={{
+            fontWeight: "bold",
+            fontSize: 22,
+            color: "white",
+          }}
+        >
+          Try Again
+        </Text>
+      </TouchableOpacity>
     </ImageBackground>
   );
 };
@@ -136,13 +144,20 @@ const styles = StyleSheet.create({
     opacity: 0.9,
   },
   button: {
+    justifyContent: "center",
+    alignItems: "center",
     borderRadius: 20,
-    elevation: 2,
     backgroundColor: "#2196F3",
   },
   scoreText: {
-    fontSize: 20,
-    color: "black",
+    fontSize: 34,
+    color: "white",
+    fontWeight: "bold",
+    textAlign: "center",
+  },
+  highscoreText: {
+    fontSize: 22,
+    color: "#026efd",
     fontWeight: "bold",
     textAlign: "center",
   },

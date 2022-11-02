@@ -14,6 +14,8 @@ import { useNavigation } from "@react-navigation/native";
 import { getAuth } from "@firebase/auth";
 import { ActivityIndicator } from "react-native";
 
+const auth = getAuth();
+
 const Dashboard = () => {
   const navigation = useNavigation();
   const [isLoading, setIsLoading] = useState(true);
@@ -21,15 +23,26 @@ const Dashboard = () => {
   const [image, setImage] = useState(null);
 
   const storage = getStorage();
-  const auth = getAuth();
 
   const getImage = async () => {
     const user = firebase.auth().currentUser;
-    const imageRef = ref(storage, `users/${user.uid}/avatar_200x200.jpeg`);
+    const imageRef = ref(storage, `users/${user.uid}/avatar_150x150.jpeg`);
     await getDownloadURL(imageRef).then((result) => {
       setImage(result);
       setIsLoading(false);
     });
+  };
+
+  const changePassword = async () => {
+    firebase
+      .auth()
+      .sendPasswordResetEmail(firebase.auth().currentUser.email)
+      .then(() => {
+        alert("Password reset email sent");
+      })
+      .catch((err) => {
+        alert(err);
+      });
   };
 
   const getData = async () => {
@@ -54,7 +67,7 @@ const Dashboard = () => {
   if (isLoading) {
     return (
       <ImageBackground
-        source={require("../images/background7.jpeg")}
+        source={require("../images/background3.jpeg")}
         style={{ width: "100%", height: "100%" }}
       >
         <View
@@ -73,7 +86,7 @@ const Dashboard = () => {
   if (!isLoading) {
     return (
       <ImageBackground
-        source={require("../images/background7.jpeg")}
+        source={require("../images/background2.jpeg")}
         style={{ height: "100%", width: "100%" }}
       >
         <SafeAreaView style={styles.container}>
@@ -82,7 +95,7 @@ const Dashboard = () => {
             style={{
               width: "80%",
               resizeMode: "stretch",
-              height: 70,
+              height: 65,
               marginBottom: 20,
             }}
           />
@@ -123,21 +136,29 @@ const Dashboard = () => {
           </TouchableOpacity>
 
           <TouchableOpacity
-            onPress={() => navigation.navigate("Profile")}
-            style={styles.button}
+            onPress={() => {
+              firebase.auth().signOut();
+            }}
+            style={[styles.button, styles.shadowProp]}
           >
             <Text style={{ fontSize: 24, fontWeight: "bold", color: "white" }}>
-              Profile
+              Sign Out
             </Text>
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => {
-              firebase.auth().signOut();
+              changePassword();
             }}
-            style={styles.button}
           >
-            <Text style={{ fontSize: 24, fontWeight: "bold", color: "white" }}>
-              Sign Out
+            <Text
+              style={{
+                marginTop: 20,
+                fontSize: 16,
+                fontWeight: "bold",
+                color: "white",
+              }}
+            >
+              Change Password
             </Text>
           </TouchableOpacity>
         </SafeAreaView>
@@ -171,5 +192,11 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     borderRadius: 50,
+  },
+  shadowProp: {
+    shadowColor: "#171717",
+    shadowOffset: { width: -2, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 3,
   },
 });

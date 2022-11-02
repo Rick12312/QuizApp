@@ -47,7 +47,7 @@ const Login = () => {
           style={{
             width: "80%",
             resizeMode: "stretch",
-            height: 70,
+            height: 65,
           }}
         />
         <View style={{ marginTop: 40 }}>
