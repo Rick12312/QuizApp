@@ -67,7 +67,7 @@ const Dashboard = () => {
   if (isLoading) {
     return (
       <ImageBackground
-        source={require("../images/background3.jpeg")}
+        source={require("../images/background2.jpeg")}
         style={{ width: "100%", height: "100%" }}
       >
         <View

@@ -11,6 +11,11 @@ import { useNavigation } from "@react-navigation/native";
 import { ActivityIndicator } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import * as Progress from "react-native-progress";
+import { Question } from "../components/Question";
+
+let interval;
+const START_TIME = 100;
+const CORRECT_SCORE_VALUE = 100;
 
 const Quiz = () => {
   const [data, setData] = useState([]);
@@ -19,7 +24,8 @@ const Quiz = () => {
   const [score, setScore] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [myColor, setMyColor] = useState("white");
-  const [timerCount, setTimer] = useState(10);
+  const [correctColor, setCorrectColor] = useState("white");
+  const [timerCount, setTimer] = useState(START_TIME);
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
 
   const navigation = useNavigation();
@@ -52,26 +58,34 @@ const Quiz = () => {
     }
   };
 
-  const startTimer = () => {
-    let interval = setInterval(() => {
-      setTimer((lastTimerCount) => {
-        lastTimerCount <= 1 && clearInterval(interval);
-        return lastTimerCount - 1;
-      });
-    }, 1000);
-    return () => clearInterval(interval);
-  };
-
   useEffect(() => {
     getQuestions();
     startTimer();
   }, []);
 
+  const startTimer = () => {
+    console.log("Here");
+    interval = setInterval(() => {
+      setTimer((lastTimerCount) => {
+        lastTimerCount <= 1 && clearInterval(interval);
+        return lastTimerCount - 1;
+      });
+    }, 100);
+    return () => clearInterval(interval);
+  };
+
+  const resetTimer = () => {
+    console.log(interval);
+    clearInterval(interval);
+    setTimer(START_TIME);
+    startTimer();
+  };
+
   const resetQuiz = () => {
     setQuestionNumber(0);
     setScore(0);
     getQuestions();
-    startTimer();
+    resetTimer();
   };
 
   const skipQuestion = () => {
@@ -96,10 +110,11 @@ const Quiz = () => {
 
   const handleSelectedOption = (option) => {
     if (option === data[questionNumber].correctAnswer) {
-      setMyColor("green");
+      setCorrectColor("green");
       optionStyles(myColor);
     } else {
       setMyColor("red");
+      setCorrectColor("green");
       optionStyles(myColor);
     }
 
@@ -107,17 +122,18 @@ const Quiz = () => {
 
     setTimeout(() => {
       setMyColor("white");
+      setCorrectColor("white");
       optionStyles(myColor);
       setIsButtonDisabled(false);
 
       if (option === data[questionNumber].correctAnswer) {
-        setScore(score + 10 + timerCount);
+        setScore(score + CORRECT_SCORE_VALUE + timerCount);
       }
 
       if (questionNumber !== 9) {
-        startTimer();
         setQuestionNumber(questionNumber + 1);
         setOptions(generateOptionsAndShuffle(data[questionNumber + 1]));
+        resetTimer();
       } else {
         showResults();
       }
@@ -204,16 +220,25 @@ const Quiz = () => {
           <View>
             <TouchableOpacity
               disabled={isButtonDisabled}
-              style={optionStyles(myColor)}
+              style={
+                options[0] === data[questionNumber].correctAnswer
+                  ? optionStyles(correctColor)
+                  : optionStyles(myColor)
+              }
               onPress={() => handleSelectedOption(options[0])}
             >
               <Text style={{ padding: 10, fontSize: 16, fontWeight: "bold" }}>
                 {options[0]}
               </Text>
             </TouchableOpacity>
+
             <TouchableOpacity
               disabled={isButtonDisabled}
-              style={optionStyles(myColor)}
+              style={
+                options[1] === data[questionNumber].correctAnswer
+                  ? optionStyles(correctColor)
+                  : optionStyles(myColor)
+              }
               onPress={() => handleSelectedOption(options[1])}
             >
               <Text style={{ padding: 10, fontSize: 16, fontWeight: "bold" }}>
@@ -222,7 +247,11 @@ const Quiz = () => {
             </TouchableOpacity>
             <TouchableOpacity
               disabled={isButtonDisabled}
-              style={optionStyles(myColor)}
+              style={
+                options[2] === data[questionNumber].correctAnswer
+                  ? optionStyles(correctColor)
+                  : optionStyles(myColor)
+              }
               onPress={() => handleSelectedOption(options[2])}
             >
               <Text style={{ padding: 10, fontSize: 16, fontWeight: "bold" }}>
@@ -231,7 +260,11 @@ const Quiz = () => {
             </TouchableOpacity>
             <TouchableOpacity
               disabled={isButtonDisabled}
-              style={optionStyles(myColor)}
+              style={
+                options[3] === data[questionNumber].correctAnswer
+                  ? optionStyles(correctColor)
+                  : optionStyles(myColor)
+              }
               onPress={() => handleSelectedOption(options[3])}
             >
               <Text style={{ padding: 10, fontSize: 16, fontWeight: "bold" }}>
@@ -248,7 +281,7 @@ const Quiz = () => {
           <View
             style={{
               position: "absolute",
-              marginTop: 700,
+              marginTop: 725,
               flexDirection: "row",
               justifyContent: "center",
               alignItems: "center",
@@ -299,11 +332,11 @@ const Quiz = () => {
 
 export default Quiz;
 
-const optionStyles = (myColor) => {
+const optionStyles = (color) => {
   return {
     flex: 1,
     borderRadius: 20,
-    backgroundColor: myColor,
+    backgroundColor: color,
     alignItems: "center",
     justifyContent: "center",
     marginTop: 4,

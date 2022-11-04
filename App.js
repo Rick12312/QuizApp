@@ -11,7 +11,7 @@ import Dashboard from "./screens/Dashboard";
 import Highscore from "./screens/Highscore";
 import Quiz from "./screens/Quiz";
 import Results from "./screens/Results";
-import Profile from "./screens/Profile";
+// import Profile from "./screens/Profile";
 
 const Stack = createStackNavigator();
 
@@ -46,7 +46,7 @@ const App = () => {
       <Stack.Screen name="Dashboard" component={Dashboard} />
       <Stack.Screen name="Quiz" component={Quiz} />
       <Stack.Screen name="Highscore" component={Highscore} />
-      <Stack.Screen name="Profile" component={Profile} />
+      {/* <Stack.Screen name="Profile" component={Profile} /> */}
       <Stack.Screen name="Results" component={Results} />
     </Stack.Navigator>
   );

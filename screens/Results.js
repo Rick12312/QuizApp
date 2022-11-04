@@ -54,8 +54,6 @@ const Results = ({ route }) => {
       .then((snapshot) => {
         if (snapshot.exists) {
           setHighscore(snapshot.data().highscore);
-          console.log(snapshot.data().gamesPlayed, "<<");
-          console.log(gamesPlayed);
           return snapshot.data().highscore;
         } else {
           console.log("User does not exist");
@@ -64,7 +62,6 @@ const Results = ({ route }) => {
       .then((highscore) => {
         console.log(highscore);
         if (highscore < score) {
-          console.log(highscore, score, "Inside if statement <<<<");
           firebase
             .firestore()
             .collection("users")
