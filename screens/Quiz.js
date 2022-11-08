@@ -281,7 +281,7 @@ const Quiz = () => {
           <View
             style={{
               position: "absolute",
-              marginTop: 725,
+              marginTop: 710,
               flexDirection: "row",
               justifyContent: "center",
               alignItems: "center",
