@@ -21,26 +21,24 @@ const Registration = () => {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [highscore, setHighscore] = useState(0);
-  const [averageScore, setAverageScore] = useState(0);
   const [gamesPlayed, setGamesPlayed] = useState(0);
-  const [avatar, setAvatar] = useState("");
 
   const storage = getStorage();
   const auth = getAuth();
   const navigation = useNavigation();
 
-  const uploadImage = async () => {
-    await firebase.auth().signInWithEmailAndPassword(email, password);
+  // const uploadImage = async () => {
+  //   await firebase.auth().signInWithEmailAndPassword(email, password);
 
-    const user = auth.currentUser;
+  //   const user = auth.currentUser;
 
-    if (user !== null) {
-      const imageRef = ref(storage, `users/${user.uid}/avatar.jpg`);
-      const img = await fetch(image);
-      const bytes = await img.blob();
-      await uploadBytes(imageRef, bytes);
-    }
-  };
+  //   if (user !== null) {
+  //     const imageRef = ref(storage, `users/${user.uid}/avatar.jpg`);
+  //     const img = await fetch(image);
+  //     const bytes = await img.blob();
+  //     await uploadBytes(imageRef, bytes);
+  //   }
+  // };
 
   const registerUser = async () => {
     await firebase
@@ -70,14 +68,13 @@ const Registration = () => {
                 email,
                 highscore,
                 gamesPlayed,
-                avatar,
               });
           })
           .catch((error) => {
             alert(error.message, "<<<<<");
           })
           .then(() => {
-            uploadImage();
+            // uploadImage();
           })
           .catch((err) => {
             console.log(err);
@@ -109,7 +106,7 @@ const Registration = () => {
             alignItems: "center",
           }}
         >
-          <ImagePickerUtil setImage={setImage} image={image} />
+          {/* <ImagePickerUtil setImage={setImage} image={image} /> */}
 
           <TextInput
             style={styles.textInput}

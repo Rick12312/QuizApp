@@ -27,14 +27,12 @@ const Results = ({ route }) => {
       .then((snapshot) => {
         if (snapshot.exists) {
           setGamesPlayed(snapshot.data().gamesPlayed + 1);
-          console.log(snapshot.data().gamesPlayed, "<<");
           return snapshot.data().gamesPlayed + 1;
         } else {
           console.log("User does not exist");
         }
       })
       .then((gamesPlayed) => {
-        console.log(gamesPlayed);
         firebase
           .firestore()
           .collection("users")
@@ -60,7 +58,6 @@ const Results = ({ route }) => {
         }
       })
       .then((highscore) => {
-        console.log(highscore);
         if (highscore < score) {
           firebase
             .firestore()

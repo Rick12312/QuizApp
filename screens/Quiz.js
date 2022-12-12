@@ -5,13 +5,15 @@ import {
   TouchableOpacity,
   StyleSheet,
   ImageBackground,
+  Button,
 } from "react-native";
 import axios from "axios";
 import { useNavigation } from "@react-navigation/native";
 import { ActivityIndicator } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import * as Progress from "react-native-progress";
-import { Question } from "../components/Question";
+import { Audio } from "expo-av";
+import PlaySound from "./PlaySound";
 
 let interval;
 const START_TIME = 100;
@@ -27,6 +29,7 @@ const Quiz = () => {
   const [correctColor, setCorrectColor] = useState("white");
   const [timerCount, setTimer] = useState(START_TIME);
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
+  const [sound, setSound] = useState();
 
   const navigation = useNavigation();
 
@@ -58,24 +61,46 @@ const Quiz = () => {
     }
   };
 
+  const playCorrectAnswerSound = async () => {
+    const { sound } = await Audio.Sound.createAsync(
+      require("../assets/audio/game-sound-correct.wav")
+    );
+    setSound(sound);
+    await sound.playAsync();
+  };
+
+  const playIncorrectAnswerSound = async () => {
+    const { sound } = await Audio.Sound.createAsync(
+      require("../assets/audio/game-sound-incorrect.wav")
+    );
+    setSound(sound);
+    await sound.playAsync();
+  };
+
+  const playCompleteSound = async () => {
+    const { sound } = await Audio.Sound.createAsync(
+      require("../assets/audio/level-complete.wav")
+    );
+    setSound(sound);
+    await sound.playAsync();
+  };
+
   useEffect(() => {
     getQuestions();
     startTimer();
   }, []);
 
   const startTimer = () => {
-    console.log("Here");
     interval = setInterval(() => {
       setTimer((lastTimerCount) => {
         lastTimerCount <= 1 && clearInterval(interval);
         return lastTimerCount - 1;
       });
-    }, 100);
+    }, 200);
     return () => clearInterval(interval);
   };
 
   const resetTimer = () => {
-    console.log(interval);
     clearInterval(interval);
     setTimer(START_TIME);
     startTimer();
@@ -112,10 +137,12 @@ const Quiz = () => {
     if (option === data[questionNumber].correctAnswer) {
       setCorrectColor("green");
       optionStyles(myColor);
+      playCorrectAnswerSound();
     } else {
-      setMyColor("red");
+      setMyColor("#FA2113");
       setCorrectColor("green");
       optionStyles(myColor);
+      playIncorrectAnswerSound();
     }
 
     setIsButtonDisabled(true);
@@ -135,6 +162,7 @@ const Quiz = () => {
         setOptions(generateOptionsAndShuffle(data[questionNumber + 1]));
         resetTimer();
       } else {
+        playCompleteSound();
         showResults();
       }
     }, 1000);
@@ -171,6 +199,15 @@ const Quiz = () => {
               alignSelf: "flex-start",
             }}
           >
+            <View
+              style={{
+                paddingBottom: -10,
+                paddingLeft: 25,
+              }}
+            >
+              <PlaySound />
+            </View>
+
             <View style={{ minWidth: "100%", padding: 25 }}>
               <View
                 style={{
@@ -188,6 +225,7 @@ const Quiz = () => {
                 >
                   {questionNumber + 1}/{data.length}
                 </Text>
+
                 <Text
                   style={{
                     fontSize: 22,
@@ -201,8 +239,8 @@ const Quiz = () => {
 
               <Text
                 style={{
-                  fontSize: 20,
-                  fontWeight: "bold",
+                  fontSize: 18,
+                  fontWeight: "800",
                   color: "white",
                 }}
               >
@@ -211,6 +249,7 @@ const Quiz = () => {
               </Text>
             </View>
           </View>
+
           <Progress.Bar
             progress={Number((questionNumber + 1) / 10)}
             width={360}

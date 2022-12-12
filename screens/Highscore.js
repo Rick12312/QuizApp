@@ -26,14 +26,14 @@ const Highscore = () => {
   const storage = getStorage();
   const auth = getAuth();
 
-  const getImage = async () => {
-    const user = firebase.auth().currentUser;
-    const imageRef = ref(storage, `users/${user.uid}/avatar_150x150.jpeg`);
-    await getDownloadURL(imageRef).then((result) => {
-      setImage(result);
-      setIsLoading(false);
-    });
-  };
+  // const getImage = async () => {
+  //   const user = firebase.auth().currentUser;
+  //   const imageRef = ref(storage, `users/${user.uid}/avatar_150x150.jpeg`);
+  //   await getDownloadURL(imageRef).then((result) => {
+  //     setImage(result);
+  //     setIsLoading(false);
+  //   });
+  // };
 
   const getHighscore = async () => {
     firebase
@@ -53,7 +53,7 @@ const Highscore = () => {
   };
 
   useEffect(() => {
-    getImage();
+    // getImage();
     getHighscore();
   }, []);
 

@@ -9,29 +9,30 @@ import {
   ImageBackground,
 } from "react-native";
 import { firebase } from "../config";
-import { getStorage, ref, getDownloadURL } from "firebase/storage";
 import { useNavigation } from "@react-navigation/native";
 import { getAuth } from "@firebase/auth";
-import { ActivityIndicator } from "react-native";
+import PlaySound from "./PlaySound";
 
 const auth = getAuth();
 
 const Dashboard = () => {
   const navigation = useNavigation();
   const [isLoading, setIsLoading] = useState(true);
-  const [user, setUser] = useState({});
-  const [image, setImage] = useState(null);
+  const [user, setUser] = useState("");
+  const [sound, setSound] = useState();
 
-  const storage = getStorage();
+  // const [image, setImage] = useState(null);
 
-  const getImage = async () => {
-    const user = firebase.auth().currentUser;
-    const imageRef = ref(storage, `users/${user.uid}/avatar_150x150.jpeg`);
-    await getDownloadURL(imageRef).then((result) => {
-      setImage(result);
-      setIsLoading(false);
-    });
-  };
+  // const storage = getStorage();
+
+  // const getImage = async () => {
+  //   const user = firebase.auth().currentUser;
+  //   const imageRef = ref(storage, `users/${user.uid}/avatar_150x150.jpeg`);
+  //   await getDownloadURL(imageRef).then((result) => {
+  //     setImage(result);
+  //     setIsLoading(false);
+  //   });
+  // };
 
   const changePassword = async () => {
     firebase
@@ -45,18 +46,36 @@ const Dashboard = () => {
       });
   };
 
+  // const getData = async () => {
+  //   firebase
+  //     .firestore()
+  //     .collection("users")
+  //     .doc(firebase.auth().currentUser.uid)
+  //     .get()
+  //     .then((data) => {
+  //       if (data) {
+  //         console.log(data.data());
+  //         setUser(data.data());
+  //       } else console.log("no registered user");
+  //     })
+  //     .then(() => {
+  //       setIsLoading(false);
+  //     });
+  // };
+
   const getData = async () => {
     firebase
       .firestore()
       .collection("users")
       .doc(firebase.auth().currentUser.uid)
       .get()
-      .then((data) => {
-        if (data) setUser(data.data());
-        else console.log("no registered user");
-      })
-      .then(() => {
-        getImage();
+      .then((snapshot) => {
+        if (snapshot.exists) {
+          setUser(snapshot.data().firstName);
+          setIsLoading(false);
+        } else {
+          console.log("User does not exist");
+        }
       });
   };
 
@@ -64,107 +83,86 @@ const Dashboard = () => {
     getData();
   }, []);
 
-  if (isLoading) {
-    return (
-      <ImageBackground
-        source={require("../images/background2.jpeg")}
-        style={{ width: "100%", height: "100%" }}
+  return (
+    <ImageBackground
+      source={require("../images/background2.jpeg")}
+      style={{ height: "100%", width: "100%" }}
+    >
+      <View
+        style={{
+          paddingBottom: -10,
+          paddingLeft: 25,
+        }}
       >
-        <View
+        <PlaySound sound={sound} setSound={setSound} />
+      </View>
+      <SafeAreaView style={styles.container}>
+        <Image
+          source={require("../images/QuizLogo.png")}
           style={{
-            flex: 1,
-            justifyContent: "center",
-            alignItems: "center",
+            width: "80%",
+            resizeMode: "stretch",
+            height: 65,
+            marginBottom: 20,
+          }}
+        />
+        <Text
+          style={{
+            fontSize: 22,
+            fontWeight: "bold",
+            color: "white",
+            marginBottom: -50,
           }}
         >
-          <ActivityIndicator color={"#fff"} size="large" />
-        </View>
-      </ImageBackground>
-    );
-  }
+          Welcome, {user}
+        </Text>
+        <Text style={{ fontSize: 20 }}></Text>
+        <TouchableOpacity
+          onPress={() => navigation.navigate("Quiz")}
+          style={styles.startBtn}
+        >
+          <Text style={{ fontSize: 24, fontWeight: "bold", color: "white" }}>
+            Start
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => navigation.navigate("Highscore")}
+          style={styles.button}
+        >
+          <Text style={{ fontSize: 24, fontWeight: "bold", color: "white" }}>
+            Highscore
+          </Text>
+        </TouchableOpacity>
 
-  if (!isLoading) {
-    return (
-      <ImageBackground
-        source={require("../images/background2.jpeg")}
-        style={{ height: "100%", width: "100%" }}
-      >
-        <SafeAreaView style={styles.container}>
-          <Image
-            source={require("../images/QuizLogo.png")}
-            style={{
-              width: "80%",
-              resizeMode: "stretch",
-              height: 65,
-              marginBottom: 20,
-            }}
-          />
-          <Image
-            source={{ uri: image }}
-            style={{
-              width: 150,
-              height: 150,
-              borderRadius: 100,
-            }}
-          />
+        <TouchableOpacity
+          onPress={() => {
+            firebase.auth().signOut();
+          }}
+          style={[styles.button, styles.shadowProp]}
+        >
+          <Text style={{ fontSize: 24, fontWeight: "bold", color: "white" }}>
+            Sign Out
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => {
+            changePassword();
+          }}
+        >
           <Text
             style={{
-              fontSize: 22,
+              marginTop: 20,
+              fontSize: 16,
               fontWeight: "bold",
               color: "white",
-              marginBottom: -50,
             }}
           >
-            Welcome, {user.firstName}
+            Change Password
           </Text>
-          <Text style={{ fontSize: 20 }}></Text>
-          <TouchableOpacity
-            onPress={() => navigation.navigate("Quiz")}
-            style={styles.startBtn}
-          >
-            <Text style={{ fontSize: 24, fontWeight: "bold", color: "white" }}>
-              Start
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() => navigation.navigate("Highscore")}
-            style={styles.button}
-          >
-            <Text style={{ fontSize: 24, fontWeight: "bold", color: "white" }}>
-              Highscore
-            </Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            onPress={() => {
-              firebase.auth().signOut();
-            }}
-            style={[styles.button, styles.shadowProp]}
-          >
-            <Text style={{ fontSize: 24, fontWeight: "bold", color: "white" }}>
-              Sign Out
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() => {
-              changePassword();
-            }}
-          >
-            <Text
-              style={{
-                marginTop: 20,
-                fontSize: 16,
-                fontWeight: "bold",
-                color: "white",
-              }}
-            >
-              Change Password
-            </Text>
-          </TouchableOpacity>
-        </SafeAreaView>
-      </ImageBackground>
-    );
-  }
+        </TouchableOpacity>
+      </SafeAreaView>
+    </ImageBackground>
+  );
 };
 
 export default Dashboard;
